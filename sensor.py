@@ -13,6 +13,7 @@ from homeassistant.const import (
     CONF_PASSWORD,
     CONF_TOKEN,
     CONF_CODE,
+    CONF_HOST,
     ATTR_ATTRIBUTION,
     CONF_SCAN_INTERVAL,
 )
@@ -34,8 +35,9 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_USERNAME): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
-        vol.Optional(CONF_TOKEN): cv.string,
-        vol.Optional(CONF_CODE): cv.string,
+        vol.Required(CONF_TOKEN): cv.string,
+        vol.Required(CONF_CODE): cv.string,
+        vol.Required(CONF_HOST): cv.string,
         vol.Optional(CONF_NAME): cv.string,
     }
 )
@@ -43,8 +45,12 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 from . import apiNetatmo
 
 class myNetatmo:
-    def __init__(self, token):
+    def __init__(self, clientID, clientSecret, username, password, host, _update_interval):
         self._lastSynchro = None
+        self._lstStation = None
+        self._update_interval = _update_interval
+        self.clientID, self.clientSecret, self.username, self.password, self.host = \
+            clientID, clientSecret, username, password, host
         pass
 
 
@@ -53,42 +59,35 @@ class myNetatmo:
         import datetime
 
         courant = datetime.datetime.now()
-        #_LOGGER.warning("--------------")
-        #_LOGGER.warning("tente un update  ? ... %s" %(self._lastSynchro))
-        myRegion = {
-            "lat_ne": 47.3290,
-            "lon_ne": 0.466389,
-            "lat_sw": 47.314906,
-            "lon_sw": 0.4010,
-        }
-        # station à controler
-        deviceId = ["02:00:00:05:7a:ba", "70:ee:50:05:83:34", "05:00:00:01:4b:50", "06:00:00:02:5e:ce"]
+        if ( self._lastSynchro == None ) or \
+            ( (self._lastSynchro + self._update_interval) < courant ):
+            #_LOGGER.warning("--------------")
+            #_LOGGER.warning("tente un update  ? ... %s" %(self._lastSynchro))
 
-        self._myNetatmo = apiNetatmo.apiNetatmo( myRegion )
-        token = self._myNetatmo.authenticate()
-        wind = self._myNetatmo.get_wind(token, deviceId)
+            self._myNetatmo = apiNetatmo.apiNetatmo( \
+                self.clientID, self.clientSecret, self.username, self.password, self.host )
+            token = self._myNetatmo.authenticate()
+            if ( self._lstStation == None ):
+                self._lstStation = self._myNetatmo.get_favorites_stations( token )
+            else:
+                self._lstStation = self._myNetatmo.update_favorites_stations( token, self._lstStation )
+            self._lastSynchro = datetime.datetime.now()
+            _LOGGER.warning("update fait, last synchro ... %s " %(self._lastSynchro))
 
-        #self._myNetatmo.getInformation(myRegion, deviceId)
-        #self._lastSynchro = datetime.datetime.now()
+    def getLstStation(self):
+        return self._lstStation
 
-        #_LOGGER.warning("update fait, last synchro ... %s " %(self._lastSynchro))
-        return self._myNetatmo
-
-    def getLastSynchro(self):
-        return self._lastSynchro
-
-    def getTemperature(self):
-        return self._myNetatmo.getTemperature()
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the platform."""
     name = config.get(CONF_NAME)
     update_interval = config.get(CONF_SCAN_INTERVAL, SCAN_INTERVAL)
 
-    token = config.get(CONF_TOKEN)
-    _LOGGER.warning(token)
-    insee = config.get(CONF_CODE)
-    _LOGGER.warning(insee)
+    username = config.get(CONF_USERNAME)
+    password = config.get(CONF_PASSWORD)
+    clientID = config.get(CONF_CODE)
+    clientSecret = config.get(CONF_TOKEN)
+    host = config.get(CONF_HOST)
 
     try:
         session = []
@@ -96,20 +95,33 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         _LOGGER.exception("Could not run my First Extension")
         return False
 
-    myNet = myNetatmo( token )
+    myNet = myNetatmo( clientID, clientSecret, username, password, host, update_interval )
     myNet.update()
-    add_entities([netatmoSensorTemperature(session, name, update_interval, myNet )], True)
-
+    lstStations = myNet.getLstStation()
+    for myStationKeys in lstStations.keys():
+        myStation = lstStations[ myStationKeys ]
+        if ( myStation.getTemperature() != None ):
+            add_entities([netatmoSensorTemperature(session, name, update_interval, myNet, myStationKeys )], True)
+        if ( myStation.getHumidity() != None ):
+            add_entities([netatmoSensorHumidity(session, name, update_interval, myNet, myStationKeys )], True)
+        if ( myStation.getPressure() != None ):
+            add_entities([netatmoSensorPressure(session, name, update_interval, myNet, myStationKeys )], True)
+        if ( myStation.getWind() != None ):
+            add_entities([netatmoSensorWind(session, name, update_interval, myNet, myStationKeys )], True)
+        if ( myStation.getWindMax() != None ):
+            add_entities([netatmoSensorWindMax(session, name, update_interval, myNet, myStationKeys )], True)
+        add_entities([netAtmoSensorlastSynchro(session, name, update_interval, myNet, myStationKeys )], True)
     # on va gerer  un element par heure ... maintenant
 
 class netatmoSensorTemperature(Entity):
-    """cumulPluieA1h."""
+    """."""
 
-    def __init__(self, session, name, interval, myNetatmo):
+    def __init__(self, session, name, interval, myNet, myStationNetatmoKey):
         """Initialize the sensor."""
         self._session = session
         self._name = name
-        self._myNetatmo = myNetatmo
+        self._myStationNetatmoKey = myStationNetatmoKey
+        self._myNet = myNet
         self._attributes = None
         self._state = None
         self.update = Throttle(interval)(self._update)
@@ -117,7 +129,9 @@ class netatmoSensorTemperature(Entity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return "myNetatmo.temperature"
+        return "myNetatmo.%s.%s.temperature" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
 
     @property
     def state(self):
@@ -131,13 +145,259 @@ class netatmoSensorTemperature(Entity):
 
     def _update(self):
         """Update device state."""
-        self._myNetatmo.update()
         status_counts = defaultdict(int)
-        status_counts[0] = self._myNetatmo.getTemperature()
+        self._myNet.update()
+        status_counts[0] = self._myNet.getLstStation()[ self._myStationNetatmoKey].getTemperature()
 
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)
         self._state = sum(status_counts.values())
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return self._attributes
+
+    @property
+    def icon(self):
+        """Icon to use in the frontend."""
+        return ICON
+
+class netatmoSensorHumidity(Entity):
+    """."""
+
+    def __init__(self, session, name, interval, myNet, myStationNetatmoKey):
+        """Initialize the sensor."""
+        self._session = session
+        self._name = name
+        self._myStationNetatmoKey = myStationNetatmoKey
+        self._myNet = myNet
+        self._attributes = None
+        self._state = None
+        self.update = Throttle(interval)(self._update)
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return "myNetatmo.%s.%s.humidity" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        return self._state
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement of this entity, if any."""
+        return "%"
+
+    def _update(self):
+        """Update device state."""
+        status_counts = defaultdict(int)
+        self._myNet.update()
+        status_counts[0] = self._myNet.getLstStation()[ self._myStationNetatmoKey].getHumidity()
+
+        self._attributes = {ATTR_ATTRIBUTION: ""}
+        self._attributes.update(status_counts)
+        self._state = sum(status_counts.values())
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return self._attributes
+
+    @property
+    def icon(self):
+        """Icon to use in the frontend."""
+        return ICON
+
+
+class netatmoSensorPressure(Entity):
+    """."""
+
+    def __init__(self, session, name, interval, myNet, myStationNetatmoKey):
+        """Initialize the sensor."""
+        self._session = session
+        self._name = name
+        self._myStationNetatmoKey = myStationNetatmoKey
+        self._myNet = myNet
+        self._attributes = None
+        self._state = None
+        self.update = Throttle(interval)(self._update)
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return "myNetatmo.%s.%s.pressure" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        return self._state
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement of this entity, if any."""
+        return "hPa"
+
+    def _update(self):
+        """Update device state."""
+        status_counts = defaultdict(int)
+        self._myNet.update()
+        status_counts[0] = self._myNet.getLstStation()[ self._myStationNetatmoKey].getPressure()
+
+        self._attributes = {ATTR_ATTRIBUTION: ""}
+        self._attributes.update(status_counts)
+        self._state = sum(status_counts.values())
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return self._attributes
+
+    @property
+    def icon(self):
+        """Icon to use in the frontend."""
+        return ICON
+
+class netatmoSensorWind(Entity):
+    """."""
+
+    def __init__(self, session, name, interval, myNet, myStationNetatmoKey):
+        """Initialize the sensor."""
+        self._session = session
+        self._name = name
+        self._myStationNetatmoKey = myStationNetatmoKey
+        self._myNet = myNet
+        self._attributes = None
+        self._state = None
+        self.update = Throttle(interval)(self._update)
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return "myNetatmo.%s.%s.wind" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        return self._state
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement of this entity, if any."""
+        return "km/h"
+
+    def _update(self):
+        """Update device state."""
+        status_counts = defaultdict(int)
+        self._myNet.update()
+        status_counts[0] = self._myNet.getLstStation()[ self._myStationNetatmoKey].getWind()
+
+        self._attributes = {ATTR_ATTRIBUTION: ""}
+        self._attributes.update(status_counts)
+        self._state = sum(status_counts.values())
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return self._attributes
+
+    @property
+    def icon(self):
+        """Icon to use in the frontend."""
+        return ICON
+
+class netatmoSensorWindMax(Entity):
+    """."""
+
+    def __init__(self, session, name, interval, myNet, myStationNetatmoKey):
+        """Initialize the sensor."""
+        self._session = session
+        self._name = name
+        self._myStationNetatmoKey = myStationNetatmoKey
+        self._myNet = myNet
+        self._attributes = None
+        self._state = None
+        self.update = Throttle(interval)(self._update)
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return "myNetatmo.%s.%s.windMax" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        return self._state
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement of this entity, if any."""
+        return "Km/h"
+
+    def _update(self):
+        """Update device state."""
+        status_counts = defaultdict(int)
+        self._myNet.update()
+        status_counts[0] = self._myNet.getLstStation()[ self._myStationNetatmoKey].getWindMax()
+
+        self._attributes = {ATTR_ATTRIBUTION: ""}
+        self._attributes.update(status_counts)
+        self._state = sum(status_counts.values())
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return self._attributes
+
+    @property
+    def icon(self):
+        """Icon to use in the frontend."""
+        return ICON
+
+class netAtmoSensorlastSynchro(Entity):
+    """."""
+
+    def __init__(self, session, name, interval, myNet, myStationNetatmoKey):
+        """Initialize the sensor."""
+        self._session = session
+        self._name = name
+        self._myStationNetatmoKey = myStationNetatmoKey
+        self._myNet = myNet
+        self._attributes = None
+        self._state = None
+        self.update = Throttle(interval)(self._update)
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return "myNetatmo.%s.%s.derniereSynchro" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        return self._state
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement of this entity, if any."""
+        return ""
+
+    def _update(self):
+        """Update device state."""
+        status_counts = defaultdict(int)
+        self._myNet.update()
+        status_counts[0] = self._myNet.getLstStation()[ self._myStationNetatmoKey].getLastSynchro()
+
+        self._attributes = {ATTR_ATTRIBUTION: ""}
+        self._attributes.update(status_counts)
+        self._state = self._myNet.getLstStation()[ self._myStationNetatmoKey].getLastSynchro().strftime("%d-%b-%Y (%H:%M:%S)")
 
     @property
     def device_state_attributes(self):

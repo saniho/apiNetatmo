@@ -1,99 +1,79 @@
-# class _apiNetatmo:
-#     import patatmo
-#     def __init__(self):
-#         CLIENT_ID = '5f10bdd86f43bb494a5bce4e'
-#         CLIENT_SECRET = 'PA7qEzhnKzCKsXe0Ehrv6zPZTM'
-#         USERNAME = 'nicolas.juignet@gmail.com'
-#         PASSWORD = 'F8Dd?Yeht5@f?8J'
-#         self._credentials = {
-#             "password":PASSWORD,
-#             "username":USERNAME,
-#             "client_id": CLIENT_ID,
-#             "client_secret":CLIENT_SECRET
-#         }
-#
-#         self._authentication = patatmo.api.authentication.Authentication(
-#             credentials= self._credentials,
-#             tmpfile="temp_auth.json"
-#         )
-#         self._client = patatmo.api.client.NetatmoClient(self._authentication)
-#
-#         pass
-#     def _setTemperature(self, temp):
-#         self._temperature = temp
-#     def _setHumidity(self, temp):
-#         self._humidity = temp
-#     def _setPressure(self, temp):
-#         self._pressure = temp
-#
-#     def getTemperature(self):
-#         return self._temperature
-#     def getHumidity(self):
-#         return self._humidity
-#     def getPressure(self):
-#         return self._pressure
-#
-#     def getInformation(self, myCoord, deviceId ):
-#         self._netatmoInfo = self._client.Getpublicdata(region=myCoord)
-#
-#         for sensor in self._netatmoInfo.response['body'][:2]:
-#             myData = sensor['measures']
-#             print("myData :", myData)
-#             print("location", sensor["place"])
-#             # on va voir pour filtrer que les id interessant ici langeais : 02:00:00:05:7a:ba
-#             for mykey in myData.keys():
-#                 if ( mykey in deviceId ):
-#                     #print(mykey)
-#                     if ('res' in myData[mykey]):
-#                         # print('measure:',myData[mykey]['res'])
-#                         myMeasure = myData[mykey]
-#                         # ch = myData[myData.keys()[0]]
-#                         for x in range(len(myMeasure['type'])):
-#                             for y in myMeasure['res'].keys():
-#                                 print("*", myMeasure['type'][x], myMeasure['res'][y][x])
-#                                 if ( myMeasure['type'][x] == "temperature"):
-#                                     self._setTemperature( myMeasure['res'][y][x] )
-#                                 if ( myMeasure['type'][x] == "humidity"):
-#                                     self._setHumidity( myMeasure['res'][y][x] )
-#                                 if ( myMeasure['type'][x] == "pressure"):
-#                                     self._setPressure( myMeasure['res'][y][x] )
-#                     elif ('rain_live' in myData[mykey].keys()):
-#                         print('rain:', myData[mykey])
-#                     elif ('wind_strength' in myData[mykey].keys()):
-#                         print('wind_strength:', myData[mykey])
-#                     else:
-#                         print("ici")
-#                         print(myData[mykey].keys())
-#
-#
-#     def getListStationInfo(self, mycoord ):
-#         pass
+
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 
 import json
 import requests
 
-class apiNetatmo:
-    def __init__(self, myRegion):
-        self.CLIENT_ID = '5f10bdd86f43bb494a5bce4e'
-        self.CLIENT_SECRET = 'PA7qEzhnKzCKsXe0Ehrv6zPZTM'
-        self.USERNAME = 'nicolas.juignet@gmail.com'
-        self.PASSWORD = 'F8Dd?Yeht5@f?8J'
-        self._myRegion = myRegion
+class myStation:
+    def __init__(self):
+        self._pressure = None
+        self._temperature = None
+        self._humidity = None
+        self._wind = None
+        self._windMax = None
+        self._lastSynchro = None
         pass
-    def _setTemperature(self, temp):
-        self._temperature = temp
-    def _setHumidity(self, temp):
-        self._humidity = temp
-    def _setPressure(self, temp):
-        self._pressure = temp
 
+    def getPressure(self):
+        return self._pressure
     def getTemperature(self):
         return self._temperature
     def getHumidity(self):
         return self._humidity
-    def getPressure(self):
-        return self._pressure
+    def getWind(self):
+        return self._wind
+    def getWindMax(self):
+        return self._windMax
+
+    def getIdStation(self):
+        return self._idStation
+
+    def getNomStation(self):
+        return self._nomStation
+
+    def createStation(self, myDevice):
+        self._idStation = myDevice["_id"]
+        self._nomStation = myDevice["station_name"]
+        for dataType in myDevice["data_type"]:
+            # print(dataType)
+            if (dataType == "Pressure"):
+                self._pressure = myDevice["dashboard_data"]["Pressure"]
+
+        for module in myDevice["modules"]:
+            # print(module)
+            for dataType in module["data_type"]:
+                # print(dataType)
+                # pressure ???
+                if (dataType == "Temperature"):
+                    self._temperature = module["dashboard_data"]["Temperature"]
+                if (dataType == "Humidity"):
+                    self._humidity = module["dashboard_data"]["Humidity"]
+                if (dataType == "Wind"):
+                    self._wind = module["dashboard_data"]["WindStrength"]
+                    self._windMax = module["dashboard_data"]["max_wind_str"]
+        pass
+
+    def setLastSynchro(self, lastSynchro):
+        self._lastSynchro = lastSynchro
+
+    def getLastSynchro(self):
+        return self._lastSynchro
+
+class apiNetatmo:
+    def __init__(self, clientID, clientSecret, username, password, deviceId):
+        #self.CLIENT_ID = '5f10bdd86f43bb494a5bce4e'
+        #self.CLIENT_SECRET = 'PA7qEzhnKzCKsXe0Ehrv6zPZTM'
+        #self.USERNAME = 'nicolas.juignet@gmail.com'
+        #self.PASSWORD = 'F8Dd?Yeht5@f?8J'
+        self.CLIENT_ID = clientID
+        self.CLIENT_SECRET = clientSecret
+        self.USERNAME = username
+        self.PASSWORD = password
+        self.deviceId = deviceId
+        pass
 
     def post_and_get_json(self, url, key, data=None, params=None):
         try:
@@ -113,63 +93,46 @@ class apiNetatmo:
                    'scope': 'read_station'}
         return self.post_and_get_json("https://api.netatmo.com/oauth2/token", "access_token", data=payload)
 
-    def get_wind(self, access_token, deviceId):
+
+    def get_favorites_stations(self, access_token ):
+        import datetime
         device_id = "06:00:00:02:5e:ce"
         params = {
             'access_token': access_token,
-            'device_id': device_id,
-            'lat_ne': self._myRegion['lat_ne'],
-            'lon_ne': self._myRegion['lon_ne'],
-            'lat_sw': self._myRegion['lat_sw'],
-            'lon_sw': self._myRegion['lon_sw'],
-        }
-        data = self.post_and_get_json("https://api.netatmo.com/api/getpublicdata", "body", params=params)
-        if ( data is None ):
-            return None
-        else:
-
-            for sensor in data[:2]:
-                myData = sensor['measures']
-                print("myData :", myData)
-                print("location", sensor["place"])
-                self._setTemperature(12.3)
-                # on va voir pour filtrer que les id interessant ici langeais : 02:00:00:05:7a:ba
-                for mykey in myData.keys():
-                    if ( mykey in deviceId ):
-                        #print(mykey)
-                        if ('res' in myData[mykey]):
-                            # print('measure:',myData[mykey]['res'])
-                            myMeasure = myData[mykey]
-                            # ch = myData[myData.keys()[0]]
-                            for x in range(len(myMeasure['type'])):
-                                for y in myMeasure['res'].keys():
-                                    print("*", myMeasure['type'][x], myMeasure['res'][y][x])
-                                    if ( myMeasure['type'][x] == "temperature"):
-                                        self._setTemperature( myMeasure['res'][y][x] )
-                                    if ( myMeasure['type'][x] == "humidity"):
-                                        self._setHumidity( myMeasure['res'][y][x] )
-                                    if ( myMeasure['type'][x] == "pressure"):
-                                        self._setPressure( myMeasure['res'][y][x] )
-                        elif ('rain_live' in myData[mykey].keys()):
-                            print('rain:', myData[mykey])
-                        elif ('wind_strength' in myData[mykey].keys()):
-                            print('wind_strength:', myData[mykey])
-                        else:
-                            print("ici")
-                            print(myData[mykey].keys())
-
-    def get_favorites_stations(self, access_token, deviceId):
-        device_id = "06:00:00:02:5e:ce"
-        params = {
-            'access_token': access_token,
-            'device_id': "02:00:00:05:7A:BA",
+            'device_id': self.deviceId,
             'get_favorites': "true",
         }
         data = self.post_and_get_json("https://api.netatmo.com/api/getstationsdata", "body", params=params)
         if ( data is None ):
             return None
         else:
-            return data
+            # remplace lstStation par un lstStation avec key et ou la key est l'id de lstation ..
+            # pour faire un update ensuite et update la bonne station de la liste.
+            lstStation = {}
+            for device in data['devices']:
+                mySt = myStation()
+                mySt.createStation( device )
+                mySt.setLastSynchro( datetime.datetime.now() )
+                lstStation[ mySt.getIdStation() ] = mySt
+            return lstStation
 
-    def getListStationInfo(self, mycoord ):
-        pass
+    def update_favorites_stations(self, access_token, lstStation ):
+        import datetime
+        params = {
+            'access_token': access_token,
+            'device_id': self.deviceId,
+            'get_favorites': "true",
+        }
+        data = self.post_and_get_json("https://api.netatmo.com/api/getstationsdata", "body", params=params)
+        if ( data is None ):
+            return None
+        else:
+            # remplace lstStation par un lstStation avec key et ou la key est l'id de lstation ..
+            # pour faire un update ensuite et update la bonne station de la liste.
+            for device in data['devices']:
+                mySt = myStation()
+                mySt.createStation( device )
+                mySt.setLastSynchro(datetime.datetime.now())
+                if mySt.getIdStation() in lstStation.keys():
+                    lstStation[ mySt.getIdStation() ] = mySt
+            return lstStation
