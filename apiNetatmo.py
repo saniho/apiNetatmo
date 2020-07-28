@@ -14,6 +14,7 @@ class myStation:
         self._humidity = None
         self._wind = None
         self._windMax = None
+        self._windMaxTime = None
         self._lastSynchro = None
         pass
 
@@ -27,6 +28,8 @@ class myStation:
         return self._wind
     def getWindMax(self):
         return self._windMax
+    def getWindMaxTime(self):
+        return self._windMaxTime
 
     def getIdStation(self):
         return self._idStation
@@ -35,25 +38,32 @@ class myStation:
         return self._nomStation
 
     def createStation(self, myDevice):
+        #print(myDevice)
         self._idStation = myDevice["_id"]
         self._nomStation = myDevice["station_name"]
+        #print(self._nomStation)
         for dataType in myDevice["data_type"]:
             # print(dataType)
             if (dataType == "Pressure"):
                 self._pressure = myDevice["dashboard_data"]["Pressure"]
 
         for module in myDevice["modules"]:
-            # print(module)
+            #print(module)
             for dataType in module["data_type"]:
-                # print(dataType)
+                #print(dataType)
                 # pressure ???
                 if (dataType == "Temperature"):
-                    self._temperature = module["dashboard_data"]["Temperature"]
+                    if( "dashboard_data" in module.keys()):
+                        self._temperature = module["dashboard_data"]["Temperature"]
                 if (dataType == "Humidity"):
-                    self._humidity = module["dashboard_data"]["Humidity"]
+                    if ("dashboard_data" in module.keys()):
+                        self._humidity = module["dashboard_data"]["Humidity"]
                 if (dataType == "Wind"):
-                    self._wind = module["dashboard_data"]["WindStrength"]
-                    self._windMax = module["dashboard_data"]["max_wind_str"]
+                    if ("dashboard_data" in module.keys()):
+                        self._wind = module["dashboard_data"]["WindStrength"]
+                        self._windMax = module["dashboard_data"]["max_wind_str"]
+                        self._windMaxTime = module["dashboard_data"]["date_max_wind_str"]
+
         pass
 
     def setLastSynchro(self, lastSynchro):
@@ -103,6 +113,7 @@ class apiNetatmo:
             'get_favorites': "true",
         }
         data = self.post_and_get_json("https://api.netatmo.com/api/getstationsdata", "body", params=params)
+        #print(data)
         if ( data is None ):
             return None
         else:

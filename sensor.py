@@ -110,6 +110,8 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
             add_entities([netatmoSensorWind(session, name, update_interval, myNet, myStationKeys )], True)
         if ( myStation.getWindMax() != None ):
             add_entities([netatmoSensorWindMax(session, name, update_interval, myNet, myStationKeys )], True)
+        if ( myStation.getWindMaxTime() != None ):
+            add_entities([netatmoSensorWindMaxTime(session, name, update_interval, myNet, myStationKeys )], True)
         add_entities([netAtmoSensorlastSynchro(session, name, update_interval, myNet, myStationKeys )], True)
     # on va gerer  un element par heure ... maintenant
 
@@ -349,6 +351,60 @@ class netatmoSensorWindMax(Entity):
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)
         self._state = sum(status_counts.values())
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return self._attributes
+
+    @property
+    def icon(self):
+        """Icon to use in the frontend."""
+        return ICON
+
+class netatmoSensorWindMaxTime(Entity):
+    """."""
+
+    def __init__(self, session, name, interval, myNet, myStationNetatmoKey):
+        """Initialize the sensor."""
+        self._session = session
+        self._name = name
+        self._myStationNetatmoKey = myStationNetatmoKey
+        self._myNet = myNet
+        self._attributes = None
+        self._state = None
+        self.update = Throttle(interval)(self._update)
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return "myNetatmo.%s.%s.windMaxTime" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        return self._state
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement of this entity, if any."""
+        return ""
+
+    def _update(self):
+        """Update device state."""
+        import datetime
+        status_counts = defaultdict(int)
+        self._myNet.update()
+        myTime = self._myNet.getLstStation()[ self._myStationNetatmoKey].getWindMaxTime()
+        myTimeFormat = datetime.datetime.fromtimestamp(myTime).isoformat()
+        status_counts[0] = myTimeFormat
+
+        self._attributes = {ATTR_ATTRIBUTION: ""}
+        # pour faire du global :)
+        #self._attributes = {"WindMaxTime": myTimeFormat, "WindMaxTime2": myTimeFormat}
+        self._attributes.update(status_counts)
+        self._state = myTimeFormat
 
     @property
     def device_state_attributes(self):
