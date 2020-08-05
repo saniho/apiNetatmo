@@ -1,7 +1,12 @@
-CLIENT_ID = '5f10bdd86f43bb494a5bce4e'
-CLIENT_SECRET = 'PA7qEzhnKzCKsXe0Ehrv6zPZTM'
-USERNAME = 'nicolas.juignet@gmail.com'
-PASSWORD = 'F8Dd?Yeht5@f?8J'
+# pour recupere le fichier avec les credential
+import configparser
+mon_conteneur = configparser.ConfigParser()
+mon_conteneur.read("../myCredential/security.txt")
+CLIENT_ID = mon_conteneur['NETATMO']['CLIENT_ID']
+CLIENT_SECRET = mon_conteneur['NETATMO']['CLIENT_SECRET']
+USERNAME = mon_conteneur['NETATMO']['USERNAME']
+PASSWORD = mon_conteneur['NETATMO']['PASSWORD']
+
 import apiNetatmo
 
 
