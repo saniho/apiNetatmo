@@ -5,6 +5,7 @@ apiNetatmo vous permet de recupere les informations des stations favorits de vot
 il suffit d'ajouter le sensor suvant dans votre configuration home assistant
 
 
+```yaml
 - platform: apiNetatmo
   username : <votreusername>
   password : <votrepassword>
@@ -12,3 +13,4 @@ il suffit d'ajouter le sensor suvant dans votre configuration home assistant
   token: <votretoken>
   host: <une des adresse mac d'un de vos favori>
   scan_interval: 600
+```
