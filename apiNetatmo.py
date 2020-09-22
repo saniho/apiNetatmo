@@ -74,10 +74,6 @@ class myStation:
 
 class apiNetatmo:
     def __init__(self, clientID, clientSecret, username, password, deviceId):
-        #self.CLIENT_ID = '5f10bdd86f43bb494a5bce4e'
-        #self.CLIENT_SECRET = 'PA7qEzhnKzCKsXe0Ehrv6zPZTM'
-        #self.USERNAME = 'nicolas.juignet@gmail.com'
-        #self.PASSWORD = 'F8Dd?Yeht5@f?8J'
         self.CLIENT_ID = clientID
         self.CLIENT_SECRET = clientSecret
         self.USERNAME = username
