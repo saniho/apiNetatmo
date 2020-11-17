@@ -38,19 +38,19 @@ class myStation:
         return self._nomStation
 
     def createStation(self, myDevice):
-        #print(myDevice)
+        print(myDevice)
         self._idStation = myDevice["_id"]
-        self._nomStation = myDevice["station_name"]
-        #print(self._nomStation)
+        self._nomStation = myDevice["place"]["city"]
+        print(self._nomStation)
         for dataType in myDevice["data_type"]:
-            # print(dataType)
-            if (dataType == "Pressure"):
+             # print(dataType)
+            if ( "dashboard_data" in myDevice.keys()):
                 self._pressure = myDevice["dashboard_data"]["Pressure"]
 
         for module in myDevice["modules"]:
-            #print(module)
+            print(module)
             for dataType in module["data_type"]:
-                #print(dataType)
+                print(dataType)
                 # pressure ???
                 if (dataType == "Temperature"):
                     if( "dashboard_data" in module.keys()):
@@ -61,8 +61,15 @@ class myStation:
                 if (dataType == "Wind"):
                     if ("dashboard_data" in module.keys()):
                         self._wind = module["dashboard_data"]["WindStrength"]
-                        self._windMax = module["dashboard_data"]["max_wind_str"]
-                        self._windMaxTime = module["dashboard_data"]["date_max_wind_str"]
+                        try:
+                            self._windMax = module["dashboard_data"]["max_wind_str" ]
+                        except:
+                            self._windMax = None
+                        
+                        try:
+                            self._windMaxTime = module["dashboard_data"]["date_max_wind_str"]
+                        except:
+                            self._windMaxTime = None
 
         pass
 
@@ -74,6 +81,10 @@ class myStation:
 
 class apiNetatmo:
     def __init__(self, clientID, clientSecret, username, password, deviceId):
+        #self.CLIENT_ID = '5f10bdd86f43bb494a5bce4e'
+        #self.CLIENT_SECRET = 'PA7qEzhnKzCKsXe0Ehrv6zPZTM'
+        #self.USERNAME = 'nicolas.juignet@gmail.com'
+        #self.PASSWORD = 'F8Dd?Yeht5@f?8J'
         self.CLIENT_ID = clientID
         self.CLIENT_SECRET = clientSecret
         self.USERNAME = username
