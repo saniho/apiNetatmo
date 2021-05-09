@@ -1,9 +1,10 @@
 {
-    "domain": "saniho",
-    "name": "saniho",
-    "documentation": "",
+    "domain": "apiNetatmo",
+    "name": "apiNetatmo sensor",
+    "documentation": "https://github.com/saniho/apiNetatmo",
     "requirements": [
     ],
+    "version": "1.0.1.5rc",
     "dependencies": [],
     "codeowners": []
 }

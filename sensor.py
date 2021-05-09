@@ -110,6 +110,8 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
             add_entities([netatmoSensorWind(session, name, update_interval, myNet, myStationKeys )], True)
         if ( myStation.getWindMax() != None ):
             add_entities([netatmoSensorWindMax(session, name, update_interval, myNet, myStationKeys )], True)
+        if (myStation.getWindGustStrenght() != None):
+            add_entities([netatmoSensorWindGustStrenght(session, name, update_interval, myNet, myStationKeys)], True)
         if ( myStation.getWindMaxTime() != None ):
             add_entities([netatmoSensorWindMaxTime(session, name, update_interval, myNet, myStationKeys )], True)
         add_entities([netAtmoSensorlastSynchro(session, name, update_interval, myNet, myStationKeys )], True)
@@ -149,11 +151,14 @@ class netatmoSensorTemperature(Entity):
         """Update device state."""
         status_counts = defaultdict(int)
         self._myNet.update()
-        status_counts[0] = self._myNet.getLstStation()[ self._myStationNetatmoKey].getTemperature()
-
+        try:
+            temperature = self._myNet.getLstStation()[ self._myStationNetatmoKey].getTemperature()
+            status_counts["temperature"] = temperature
+        except:
+            return
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)
-        self._state = sum(status_counts.values())
+        self._state = "%s" %temperature
 
     @property
     def device_state_attributes(self):
@@ -198,11 +203,11 @@ class netatmoSensorHumidity(Entity):
         """Update device state."""
         status_counts = defaultdict(int)
         self._myNet.update()
-        status_counts[0] = self._myNet.getLstStation()[ self._myStationNetatmoKey].getHumidity()
-
+        humidity = self._myNet.getLstStation()[ self._myStationNetatmoKey].getHumidity()
+        status_counts["humidity"] = humidity
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)
-        self._state = sum(status_counts.values())
+        self._state = "%s" %humidity
 
     @property
     def device_state_attributes(self):
@@ -248,11 +253,12 @@ class netatmoSensorPressure(Entity):
         """Update device state."""
         status_counts = defaultdict(int)
         self._myNet.update()
-        status_counts[0] = self._myNet.getLstStation()[ self._myStationNetatmoKey].getPressure()
+        pressure = self._myNet.getLstStation()[ self._myStationNetatmoKey].getPressure()
+        status_counts["Pressure"] = pressure
 
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)
-        self._state = sum(status_counts.values())
+        self._state = "%s" %pressure
 
     @property
     def device_state_attributes(self):
@@ -297,11 +303,12 @@ class netatmoSensorWind(Entity):
         """Update device state."""
         status_counts = defaultdict(int)
         self._myNet.update()
-        status_counts[0] = self._myNet.getLstStation()[ self._myStationNetatmoKey].getWind()
+        wind = self._myNet.getLstStation()[ self._myStationNetatmoKey].getWind()
+        status_counts["Wind"] = wind
 
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)
-        self._state = sum(status_counts.values())
+        self._state = "%s" %wind
 
     @property
     def device_state_attributes(self):
@@ -346,11 +353,62 @@ class netatmoSensorWindMax(Entity):
         """Update device state."""
         status_counts = defaultdict(int)
         self._myNet.update()
-        status_counts[0] = self._myNet.getLstStation()[ self._myStationNetatmoKey].getWindMax()
+        windMax = self._myNet.getLstStation()[ self._myStationNetatmoKey].getWindMax()
+        status_counts["WindMax"] = windMax
 
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)
-        self._state = sum(status_counts.values())
+        self._state = "%s" %windMax
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return self._attributes
+
+    @property
+    def icon(self):
+        """Icon to use in the frontend."""
+        return ICON
+
+class netatmoSensorWindGustStrenght(Entity):
+    """."""
+
+    def __init__(self, session, name, interval, myNet, myStationNetatmoKey):
+        """Initialize the sensor."""
+        self._session = session
+        self._name = name
+        self._myStationNetatmoKey = myStationNetatmoKey
+        self._myNet = myNet
+        self._attributes = None
+        self._state = None
+        self.update = Throttle(interval)(self._update)
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return "myNetatmo.%s.%s.windGustStrenght" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        return self._state
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement of this entity, if any."""
+        return "Km/h"
+
+    def _update(self):
+        """Update device state."""
+        status_counts = defaultdict(int)
+        self._myNet.update()
+        WindGustStrenght = self._myNet.getLstStation()[ self._myStationNetatmoKey].getWindGustStrenght()
+        status_counts["WindGustStrenght"] = WindGustStrenght
+
+        self._attributes = {ATTR_ATTRIBUTION: ""}
+        self._attributes.update(status_counts)
+        self._state = "%s" %WindGustStrenght
 
     @property
     def device_state_attributes(self):
@@ -397,14 +455,13 @@ class netatmoSensorWindMaxTime(Entity):
         status_counts = defaultdict(int)
         self._myNet.update()
         myTime = self._myNet.getLstStation()[ self._myStationNetatmoKey].getWindMaxTime()
-        myTimeFormat = datetime.datetime.fromtimestamp(myTime).isoformat()
-        status_counts[0] = myTimeFormat
+        if ( myTime is not None):
+            myTimeFormat = datetime.datetime.fromtimestamp(myTime).isoformat()
+            status_counts["LastUpdate"] = myTimeFormat
 
-        self._attributes = {ATTR_ATTRIBUTION: ""}
-        # pour faire du global :)
-        #self._attributes = {"WindMaxTime": myTimeFormat, "WindMaxTime2": myTimeFormat}
-        self._attributes.update(status_counts)
-        self._state = myTimeFormat
+            self._attributes = {ATTR_ATTRIBUTION: ""}
+            self._attributes.update(status_counts)
+            self._state = myTimeFormat
 
     @property
     def device_state_attributes(self):
@@ -449,7 +506,8 @@ class netAtmoSensorlastSynchro(Entity):
         """Update device state."""
         status_counts = defaultdict(int)
         self._myNet.update()
-        status_counts[0] = self._myNet.getLstStation()[ self._myStationNetatmoKey].getLastSynchro()
+        lastSynchro = self._myNet.getLstStation()[ self._myStationNetatmoKey].getLastSynchro()
+        status_counts["LastSynchro"] = lastSynchro
 
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)

@@ -14,6 +14,7 @@ class myStation:
         self._humidity = None
         self._wind = None
         self._windMax = None
+        self._windGustStrenght = None
         self._windMaxTime = None
         self._lastSynchro = None
         pass
@@ -30,6 +31,8 @@ class myStation:
         return self._windMax
     def getWindMaxTime(self):
         return self._windMaxTime
+    def getWindGustStrenght(self):
+        return self._windGustStrenght
 
     def getIdStation(self):
         return self._idStation
@@ -60,7 +63,14 @@ class myStation:
                         self._humidity = module["dashboard_data"]["Humidity"]
                 if (dataType == "Wind"):
                     if ("dashboard_data" in module.keys()):
-                        self._wind = module["dashboard_data"]["WindStrength"]
+                        try:
+                            self._wind = module["dashboard_data"]["WindStrength"]
+                        except:
+                            self._wind = None
+                        try:
+                            self._windGustStrenght = module["dashboard_data"]["GustStrength" ]
+                        except:
+                            self._windGustStrenght = None
                         try:
                             self._windMax = module["dashboard_data"]["max_wind_str" ]
                         except:
