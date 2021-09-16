@@ -14,7 +14,9 @@ myNetatmo = apiNetatmo.apiNetatmo( CLIENT_ID, CLIENT_SECRET, USERNAME, PASSWORD,
 token = myNetatmo.authenticate()
 data = myNetatmo.get_favorites_stations(token)
 for clef in data.keys():
-    print(data[clef].getWindMax())
+    print(" -----", clef, " ----" )
+    print("getWindMax : ", data[clef].getWindMax())
+    print("getRain : ", data[clef].getRain())
 
 # for device in data['devices']:
 #     print( "--------" )

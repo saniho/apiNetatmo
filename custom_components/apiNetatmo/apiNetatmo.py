@@ -12,6 +12,7 @@ class myStation:
         self._pressure = None
         self._temperature = None
         self._humidity = None
+        self._rain = None
         self._wind = None
         self._windMax = None
         self._windGustStrenght = None
@@ -25,6 +26,8 @@ class myStation:
         return self._temperature
     def getHumidity(self):
         return self._humidity
+    def getRain(self):
+        return self._rain
     def getWind(self):
         return self._wind
     def getWindMax(self):
@@ -51,7 +54,8 @@ class myStation:
                 self._pressure = myDevice["dashboard_data"]["Pressure"]
 
         for module in myDevice["modules"]:
-            print(module)
+            if ( module['_id'] == "70:ee:50:3e:e2:5c" ):
+                print(module)
             for dataType in module["data_type"]:
                 print(dataType)
                 # pressure ???
@@ -61,6 +65,9 @@ class myStation:
                 if (dataType == "Humidity"):
                     if ("dashboard_data" in module.keys()):
                         self._humidity = module["dashboard_data"]["Humidity"]
+                if (dataType == "Rain"):
+                    if ("dashboard_data" in module.keys()):
+                        self._rain = module["dashboard_data"]["Rain"]
                 if (dataType == "Wind"):
                     if ("dashboard_data" in module.keys()):
                         try:

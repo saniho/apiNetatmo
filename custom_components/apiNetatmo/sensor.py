@@ -104,6 +104,8 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
             add_entities([netatmoSensorTemperature(session, name, update_interval, myNet, myStationKeys )], True)
         if ( myStation.getHumidity() != None ):
             add_entities([netatmoSensorHumidity(session, name, update_interval, myNet, myStationKeys )], True)
+        if ( myStation.getRain() != None ):
+            add_entities([netatmoSensorRain(session, name, update_interval, myNet, myStationKeys )], True)
         if ( myStation.getPressure() != None ):
             add_entities([netatmoSensorPressure(session, name, update_interval, myNet, myStationKeys )], True)
         if ( myStation.getWind() != None ):
@@ -208,6 +210,56 @@ class netatmoSensorHumidity(Entity):
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)
         self._state = "%s" %humidity
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return self._attributes
+
+    @property
+    def icon(self):
+        """Icon to use in the frontend."""
+        return ICON
+
+
+class netatmoSensorRain(Entity):
+    """."""
+
+    def __init__(self, session, name, interval, myNet, myStationNetatmoKey):
+        """Initialize the sensor."""
+        self._session = session
+        self._name = name
+        self._myStationNetatmoKey = myStationNetatmoKey
+        self._myNet = myNet
+        self._attributes = None
+        self._state = None
+        self.update = Throttle(interval)(self._update)
+
+    @property
+    def name(self):
+        """Return the name of the sensor."""
+        return "myNetatmo.%s.%s.rain" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
+    @property
+    def state(self):
+        """Return the state of the sensor."""
+        return self._state
+
+    @property
+    def unit_of_measurement(self):
+        """Return the unit of measurement of this entity, if any."""
+        return "%"
+
+    def _update(self):
+        """Update device state."""
+        status_counts = defaultdict(int)
+        self._myNet.update()
+        rain = self._myNet.getLstStation()[ self._myStationNetatmoKey].getRain()
+        status_counts["rain"] = rain
+        self._attributes = {ATTR_ATTRIBUTION: ""}
+        self._attributes.update(status_counts)
+        self._state = "%s" %rain
 
     @property
     def device_state_attributes(self):
