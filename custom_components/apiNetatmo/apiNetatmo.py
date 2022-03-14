@@ -3,8 +3,6 @@ import logging
 
 _LOGGER = logging.getLogger(__name__)
 
-
-import json
 import requests
 
 class myStation:

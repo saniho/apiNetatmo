@@ -18,10 +18,10 @@ from homeassistant.const import (
     CONF_SCAN_INTERVAL,
 )
 
+from .const import ( __VERSION__ )
+
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
-from homeassistant.util import slugify
-from homeassistant.util.dt import now, parse_date
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -61,9 +61,6 @@ class myNetatmo:
         courant = datetime.datetime.now()
         if ( self._lastSynchro == None ) or \
             ( (self._lastSynchro + self._update_interval) < courant ):
-            #_LOGGER.warning("--------------")
-            #_LOGGER.warning("tente un update  ? ... %s" %(self._lastSynchro))
-
             self._myNetatmo = apiNetatmo.apiNetatmo( \
                 self.clientID, self.clientSecret, self.username, self.password, self.host )
             token = self._myNetatmo.authenticate()
@@ -72,7 +69,7 @@ class myNetatmo:
             else:
                 self._lstStation = self._myNetatmo.update_favorites_stations( token, self._lstStation )
             self._lastSynchro = datetime.datetime.now()
-            _LOGGER.warning("update fait, last synchro ... %s " %(self._lastSynchro))
+            _LOGGER.info("update fait, last synchro ... %s " %(self._lastSynchro))
 
     def getLstStation(self):
         return self._lstStation
@@ -133,6 +130,13 @@ class netatmoSensorTemperature(Entity):
         self.update = Throttle(interval)(self._update)
 
     @property
+    def unique_id(self):
+        "Return a unique_id for this entity."
+        return "myNetatmo.%s.%s.temperature" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
+
+    @property
     def name(self):
         """Return the name of the sensor."""
         return "myNetatmo.%s.%s.temperature" \
@@ -156,6 +160,7 @@ class netatmoSensorTemperature(Entity):
         try:
             temperature = self._myNet.getLstStation()[ self._myStationNetatmoKey].getTemperature()
             status_counts["temperature"] = temperature
+            status_counts["version"] = __VERSION__
         except:
             return
         self._attributes = {ATTR_ATTRIBUTION: ""}
@@ -163,7 +168,7 @@ class netatmoSensorTemperature(Entity):
         self._state = "%s" %temperature
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return self._attributes
 
@@ -184,6 +189,13 @@ class netatmoSensorHumidity(Entity):
         self._attributes = None
         self._state = None
         self.update = Throttle(interval)(self._update)
+
+    @property
+    def unique_id(self):
+        "Return a unique_id for this entity."
+        return "myNetatmo.%s.%s.humidity" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
 
     @property
     def name(self):
@@ -207,12 +219,13 @@ class netatmoSensorHumidity(Entity):
         self._myNet.update()
         humidity = self._myNet.getLstStation()[ self._myStationNetatmoKey].getHumidity()
         status_counts["humidity"] = humidity
+        status_counts["version"] = __VERSION__
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)
         self._state = "%s" %humidity
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return self._attributes
 
@@ -236,6 +249,13 @@ class netatmoSensorRain(Entity):
         self.update = Throttle(interval)(self._update)
 
     @property
+    def unique_id(self):
+        "Return a unique_id for this entity."
+        return "myNetatmo.%s.%s.rain" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
+
+    @property
     def name(self):
         """Return the name of the sensor."""
         return "myNetatmo.%s.%s.rain" \
@@ -257,12 +277,13 @@ class netatmoSensorRain(Entity):
         self._myNet.update()
         rain = self._myNet.getLstStation()[ self._myStationNetatmoKey].getRain()
         status_counts["rain"] = rain
+        status_counts["version"] = __VERSION__
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)
         self._state = "%s" %rain
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return self._attributes
 
@@ -286,6 +307,13 @@ class netatmoSensorPressure(Entity):
         self.update = Throttle(interval)(self._update)
 
     @property
+    def unique_id(self):
+        "Return a unique_id for this entity."
+        return "myNetatmo.%s.%s.pressure" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
+
+    @property
     def name(self):
         """Return the name of the sensor."""
         return "myNetatmo.%s.%s.pressure" \
@@ -307,13 +335,13 @@ class netatmoSensorPressure(Entity):
         self._myNet.update()
         pressure = self._myNet.getLstStation()[ self._myStationNetatmoKey].getPressure()
         status_counts["Pressure"] = pressure
-
+        status_counts["version"] = __VERSION__
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)
         self._state = "%s" %pressure
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return self._attributes
 
@@ -334,6 +362,13 @@ class netatmoSensorWind(Entity):
         self._attributes = None
         self._state = None
         self.update = Throttle(interval)(self._update)
+
+    @property
+    def unique_id(self):
+        "Return a unique_id for this entity."
+        return "myNetatmo.%s.%s.wind" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
 
     @property
     def name(self):
@@ -357,13 +392,13 @@ class netatmoSensorWind(Entity):
         self._myNet.update()
         wind = self._myNet.getLstStation()[ self._myStationNetatmoKey].getWind()
         status_counts["Wind"] = wind
-
+        status_counts["version"] = __VERSION__
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)
         self._state = "%s" %wind
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return self._attributes
 
@@ -384,6 +419,13 @@ class netatmoSensorWindMax(Entity):
         self._attributes = None
         self._state = None
         self.update = Throttle(interval)(self._update)
+
+    @property
+    def unique_id(self):
+        "Return a unique_id for this entity."
+        return "myNetatmo.%s.%s.windMax" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
 
     @property
     def name(self):
@@ -407,13 +449,13 @@ class netatmoSensorWindMax(Entity):
         self._myNet.update()
         windMax = self._myNet.getLstStation()[ self._myStationNetatmoKey].getWindMax()
         status_counts["WindMax"] = windMax
-
+        status_counts["version"] = __VERSION__
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)
         self._state = "%s" %windMax
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return self._attributes
 
@@ -434,6 +476,13 @@ class netatmoSensorWindGustStrenght(Entity):
         self._attributes = None
         self._state = None
         self.update = Throttle(interval)(self._update)
+
+    @property
+    def unique_id(self):
+        "Return a unique_id for this entity."
+        return "myNetatmo.%s.%s.windGustStrenght" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
 
     @property
     def name(self):
@@ -457,13 +506,13 @@ class netatmoSensorWindGustStrenght(Entity):
         self._myNet.update()
         WindGustStrenght = self._myNet.getLstStation()[ self._myStationNetatmoKey].getWindGustStrenght()
         status_counts["WindGustStrenght"] = WindGustStrenght
-
+        status_counts["version"] = __VERSION__
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)
         self._state = "%s" %WindGustStrenght
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return self._attributes
 
@@ -484,6 +533,13 @@ class netatmoSensorWindMaxTime(Entity):
         self._attributes = None
         self._state = None
         self.update = Throttle(interval)(self._update)
+
+    @property
+    def unique_id(self):
+        "Return a unique_id for this entity."
+        return "myNetatmo.%s.%s.windMaxTime" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
 
     @property
     def name(self):
@@ -510,13 +566,13 @@ class netatmoSensorWindMaxTime(Entity):
         if ( myTime is not None):
             myTimeFormat = datetime.datetime.fromtimestamp(myTime).isoformat()
             status_counts["LastUpdate"] = myTimeFormat
-
+            status_counts["version"] = __VERSION__
             self._attributes = {ATTR_ATTRIBUTION: ""}
             self._attributes.update(status_counts)
             self._state = myTimeFormat
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return self._attributes
 
@@ -537,6 +593,13 @@ class netAtmoSensorlastSynchro(Entity):
         self._attributes = None
         self._state = None
         self.update = Throttle(interval)(self._update)
+
+    @property
+    def unique_id(self):
+        "Return a unique_id for this entity."
+        return "myNetatmo.%s.%s.derniereSynchro" \
+               %(self._myNet.getLstStation()[ self._myStationNetatmoKey].getIdStation(), \
+                 self._myNet.getLstStation()[ self._myStationNetatmoKey].getNomStation())
 
     @property
     def name(self):
@@ -560,13 +623,13 @@ class netAtmoSensorlastSynchro(Entity):
         self._myNet.update()
         lastSynchro = self._myNet.getLstStation()[ self._myStationNetatmoKey].getLastSynchro()
         status_counts["LastSynchro"] = lastSynchro
-
+        status_counts["version"] = __VERSION__
         self._attributes = {ATTR_ATTRIBUTION: ""}
         self._attributes.update(status_counts)
         self._state = self._myNet.getLstStation()[ self._myStationNetatmoKey].getLastSynchro().strftime("%d-%b-%Y (%H:%M:%S)")
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return self._attributes
 
