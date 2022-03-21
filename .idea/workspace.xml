@@ -19,7 +19,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ac7c616a-d2d4-4819-be66-a5b1c15eac78" name="Default Changelist" comment="add rain information" />
+    <list default="true" id="ac7c616a-d2d4-4819-be66-a5b1c15eac78" name="Default Changelist" comment="correction on rain information">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/custom_components/apiNetatmo/const.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_components/apiNetatmo/const.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -54,6 +57,11 @@
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Projets\apiNetatmo" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration name="testSensor" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -180,7 +188,8 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="change state attribute value" />
     <MESSAGE value="add rain information" />
-    <option name="LAST_COMMIT_MESSAGE" value="add rain information" />
+    <MESSAGE value="correction on rain information" />
+    <option name="LAST_COMMIT_MESSAGE" value="correction on rain information" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
