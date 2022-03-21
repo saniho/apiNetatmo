@@ -7,7 +7,7 @@ CLIENT_SECRET = mon_conteneur['NETATMO']['CLIENT_SECRET']
 USERNAME = mon_conteneur['NETATMO']['USERNAME']
 PASSWORD = mon_conteneur['NETATMO']['PASSWORD']
 
-import apiNetatmo
+from custom_components.apiNetatmo import apiNetatmo
 
 
 myNetatmo = apiNetatmo.apiNetatmo( CLIENT_ID, CLIENT_SECRET, USERNAME, PASSWORD, "06:00:00:02:5e:ce")
