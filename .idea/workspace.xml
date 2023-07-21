@@ -20,8 +20,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ac7c616a-d2d4-4819-be66-a5b1c15eac78" name="Default Changelist" comment="correction on rain information">
+      <change afterPath="$PROJECT_DIR$/custom_components/apiNetatmo/lnetatmo.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/custom_components/apiNetatmo/apiNetatmo.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_components/apiNetatmo/apiNetatmo.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/custom_components/apiNetatmo/const.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_components/apiNetatmo/const.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/custom_components/apiNetatmo/sensor.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_components/apiNetatmo/sensor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testSensor.py" beforeDir="false" afterPath="$PROJECT_DIR$/testSensor.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,10 +58,13 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "C:/Projets/apiNetatmo"
+  }
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Projets\apiNetatmo" />
@@ -71,9 +78,10 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="C:\Python\Python310\python.exe" />
+      <option name="SDK_NAME" value="Python 3.10 (apiMareeInfo)" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testSensor.py" />
@@ -198,6 +206,26 @@
           <url>file://$PROJECT_DIR$/custom_components/apiNetatmo/sensor.py</url>
           <line>1</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/custom_components/apiNetatmo/lnetatmo.py</url>
+          <line>194</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/custom_components/apiNetatmo/lnetatmo.py</url>
+          <line>810</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/custom_components/apiNetatmo/lnetatmo.py</url>
+          <line>350</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/custom_components/apiNetatmo/apiNetatmo.py</url>
+          <line>158</line>
+          <option name="timeStamp" value="18" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
