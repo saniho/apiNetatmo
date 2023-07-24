@@ -184,7 +184,7 @@ class apiNetatmo:
         else:
             # remplace lstStation par un lstStation avec key et ou la key est l'id de lstation ..
             # pour faire un update ensuite et update la bonne station de la liste.
-            for device in data['devices']:
+            for device in data['body']['devices']:
                 mySt = myStation()
                 mySt.createStation( device )
                 mySt.setLastSynchro(datetime.datetime.now())
