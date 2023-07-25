@@ -4,15 +4,12 @@ mon_conteneur = configparser.ConfigParser()
 mon_conteneur.read("../myCredential/security.txt")
 CLIENT_ID = mon_conteneur['NETATMO']['CLIENT_ID']
 CLIENT_SECRET = mon_conteneur['NETATMO']['CLIENT_SECRET']
-USERNAME = mon_conteneur['NETATMO']['USERNAME']
-PASSWORD = mon_conteneur['NETATMO']['PASSWORD']
-
+REFRESH_TOKEN = mon_conteneur['NETATMO']['REFRESH_TOKEN']
 from custom_components.apiNetatmo import apiNetatmo
 
-
-myNetatmo = apiNetatmo.apiNetatmo( CLIENT_ID, CLIENT_SECRET, USERNAME, PASSWORD, "06:00:00:02:5e:ce")
-token = myNetatmo.authenticate()
-data = myNetatmo.get_favorites_stations(token)
+myNetatmo = apiNetatmo.apiNetatmo( CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, deviceId="06:00:00:02:5e:ce")
+myNetatmo.authenticate()
+data = myNetatmo.get_favorites_stations()
 for clef in data.keys():
     print(" -----", clef, " ----" )
     print("getWindMax : ", data[clef].getWindMax())

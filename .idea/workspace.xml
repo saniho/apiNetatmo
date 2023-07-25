@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="BranchesTreeState">
     <expand>
       <path>
@@ -19,9 +22,10 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ac7c616a-d2d4-4819-be66-a5b1c15eac78" name="Default Changelist" comment="correction on rain information">
+    <list default="true" id="ac7c616a-d2d4-4819-be66-a5b1c15eac78" name="Default Changelist" comment="migration to new authentification requered by NetAtmo">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/custom_components/apiNetatmo/const.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_components/apiNetatmo/const.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/custom_components/apiNetatmo/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/custom_components/apiNetatmo/manifest.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,10 +58,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Projets/apiNetatmo&quot;
+  }
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Projets\apiNetatmo" />
@@ -71,9 +79,10 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="C:\Python\Python310\python.exe" />
+      <option name="SDK_NAME" value="Python 3.10 (apiMareeInfo)" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testSensor.py" />
@@ -170,7 +179,29 @@
       <option name="project" value="LOCAL" />
       <updated>1631824611520</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="migration to new authentification requered by NetAtmo">
+      <created>1689970451642</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1689970451642</updated>
+    </task>
+    <task id="LOCAL-00012" summary="migration to new authentification requered by NetAtmo">
+      <created>1689970589743</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1689970589743</updated>
+    </task>
+    <task id="LOCAL-00013" summary="migration to new authentification requered by NetAtmo">
+      <option name="closed" value="true" />
+      <created>1690224528904</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1690224528904</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -189,7 +220,8 @@
     <MESSAGE value="change state attribute value" />
     <MESSAGE value="add rain information" />
     <MESSAGE value="correction on rain information" />
-    <option name="LAST_COMMIT_MESSAGE" value="correction on rain information" />
+    <MESSAGE value="migration to new authentification requered by NetAtmo" />
+    <option name="LAST_COMMIT_MESSAGE" value="migration to new authentification requered by NetAtmo" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -198,6 +230,11 @@
           <url>file://$PROJECT_DIR$/custom_components/apiNetatmo/sensor.py</url>
           <line>1</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/custom_components/apiNetatmo/apiNetatmo.py</url>
+          <line>158</line>
+          <option name="timeStamp" value="18" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

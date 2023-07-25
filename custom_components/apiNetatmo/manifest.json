@@ -4,7 +4,7 @@
     "documentation": "https://github.com/saniho/apiNetatmo",
     "requirements": [
     ],
-    "version": "1.0.2.1",
+    "version": "1.1.0.2",
     "dependencies": [],
     "codeowners": []
 }

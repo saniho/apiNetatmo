@@ -95,42 +95,64 @@ class myStation:
         return self._lastSynchro
 
 class apiNetatmo:
-    def __init__(self, clientID, clientSecret, username, password, deviceId):
-        #self.CLIENT_ID = '5f10bdd86f43bb494a5bce4e'
-        #self.CLIENT_SECRET = 'PA7qEzhnKzCKsXe0Ehrv6zPZTM'
-        #self.USERNAME = 'nicolas.juignet@gmail.com'
-        #self.PASSWORD = 'F8Dd?Yeht5@f?8J'
+    def __init__(self, clientID, clientSecret, refreshToken, deviceId):
         self.CLIENT_ID = clientID
         self.CLIENT_SECRET = clientSecret
-        self.USERNAME = username
-        self.PASSWORD = password
+        self.refreshToken = refreshToken
         self.deviceId = deviceId
+        self.expiration = 0 # Force refresh token
+        self._accessToken = None
         pass
 
-    def post_and_get_json(self, url, key, data=None, params=None):
+    def renew_token(self):
+        import time
+        payload = {
+                "grant_type" : "refresh_token",
+                "refresh_token" : self.refreshToken,
+                "client_id" : self.CLIENT_ID,
+                "client_secret" : self.CLIENT_SECRET
+                }
+        resp = self.post_and_get_json("https://api.netatmo.com/oauth2/token", "access_token", params=payload)
+        if self.refreshToken != resp['refresh_token']:
+            print("New refresh token:", resp['refresh_token'])
+        self._accessToken = resp['access_token']
+        self.refreshToken = resp['refresh_token']
+        self.expiration = int(resp['expire_in'] + time.time())
+
+    def accessToken(self):
+        import time
+        if self.expiration < time.time() : self.renew_token()
+        return self._accessToken
+
+    def post_and_get_json(self, url, key, params=None, timeout=10):
+        #response = requests.post(url, params=params, data=data)
+        import json
+        import urllib
+        req = urllib.request.Request(url)
+        if params:
+            req.add_header("Content-Type","application/x-www-form-urlencoded;charset=utf-8")
+            params = urllib.parse.urlencode(params).encode('utf-8')
         try:
-            response = requests.post(url, params=params, data=data)
-            response.raise_for_status()
-            return response.json()[key]
-        except requests.exceptions.HTTPError as error:
-            print('%s: %s', error.response.status_code, error.response.text)
+            response = urllib.request.urlopen(req, params, timeout=timeout)
+        except urllib.error.HTTPError as err:
+            if err.code == 403:
+                logger.warning("Your current token scope do not allow access to %s" % topic)
+            else:
+                print("code=%s, reason=%s, body=%s" % (err.code, err.reason, err.fp.read()))
             return None
+        data = b""
+        for buff in iter(lambda: response.read(65535), b''): data += buff
+        return json.loads(data.decode("utf-8"))
+            #return response.json()[key]
 
     def authenticate(self, ):
-        payload = {'grant_type': 'password',
-                   'username': self.USERNAME,
-                   'password': self.PASSWORD,
-                   'client_id': self.CLIENT_ID,
-                   'client_secret': self.CLIENT_SECRET,
-                   'scope': 'read_station'}
-        return self.post_and_get_json("https://api.netatmo.com/oauth2/token", "access_token", data=payload)
+        self.accessToken()
 
-
-    def get_favorites_stations(self, access_token ):
+    def get_favorites_stations(self):
         import datetime
         device_id = "06:00:00:02:5e:ce"
         params = {
-            'access_token': access_token,
+            'access_token': self._accessToken,
             'device_id': self.deviceId,
             'get_favorites': "true",
         }
@@ -142,17 +164,17 @@ class apiNetatmo:
             # remplace lstStation par un lstStation avec key et ou la key est l'id de lstation ..
             # pour faire un update ensuite et update la bonne station de la liste.
             lstStation = {}
-            for device in data['devices']:
+            for device in data['body']['devices']:
                 mySt = myStation()
                 mySt.createStation( device )
                 mySt.setLastSynchro( datetime.datetime.now() )
                 lstStation[ mySt.getIdStation() ] = mySt
             return lstStation
 
-    def update_favorites_stations(self, access_token, lstStation ):
+    def update_favorites_stations(self, lstStation ):
         import datetime
         params = {
-            'access_token': access_token,
+            'access_token': self._accessToken,
             'device_id': self.deviceId,
             'get_favorites': "true",
         }
@@ -162,7 +184,7 @@ class apiNetatmo:
         else:
             # remplace lstStation par un lstStation avec key et ou la key est l'id de lstation ..
             # pour faire un update ensuite et update la bonne station de la liste.
-            for device in data['devices']:
+            for device in data['body']['devices']:
                 mySt = myStation()
                 mySt.createStation( device )
                 mySt.setLastSynchro(datetime.datetime.now())
