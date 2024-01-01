@@ -107,45 +107,6 @@ class apiNetatmo:
         self._accessToken = accessToken
         pass
 
-    def postRequest(topic, url, params=None, timeout=10):
-        if PYTHON3:
-            req = urllib.request.Request(url)
-            if params:
-                req.add_header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
-                if "access_token" in params:
-                    req.add_header("Authorization", "Bearer %s" % params.pop("access_token"))
-                params = urllib.parse.urlencode(params).encode('utf-8')
-            try:
-                resp = urllib.request.urlopen(req, params, timeout=timeout) if params else urllib.request.urlopen(req,
-                                                                                                                  timeout=timeout)
-            except urllib.error.HTTPError as err:
-                if err.code == 403:
-                    logger.warning("Your current token scope do not allow access to %s" % topic)
-                else:
-                    logger.error("code=%s, reason=%s, body=%s" % (err.code, err.reason, err.fp.read()))
-                return None
-        else:
-            if params:
-                token = params.pop("access_token") if "access_token" in params else None
-                params = urlencode(params)
-                headers = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
-                if token: headers["Authorization"] = "Bearer %s" % token
-            req = urllib2.Request(url=url, data=params, headers=headers) if params else urllib2.Request(url=url,
-                                                                                                        headers=headers)
-            try:
-                resp = urllib2.urlopen(req, timeout=timeout)
-            except urllib2.HTTPError as err:
-                if err.code == 403:
-                    logger.warning("Your current token scope do not allow access to %s" % topic)
-                else:
-                    logger.error("code=%s, reason=%s" % (err.code, err.reason))
-                return None
-        data = b""
-        for buff in iter(lambda: resp.read(65535), b''): data += buff
-        # Return values in bytes if not json data to handle properly camera images
-        returnedContentType = resp.getheader("Content-Type") if PYTHON3 else resp.info()["Content-Type"]
-        return json.loads(data.decode("utf-8")) if "application/json" in returnedContentType else data
-
     def renew_token(self):
         import time
         payload = {
@@ -154,7 +115,6 @@ class apiNetatmo:
                 "client_id" : self.CLIENT_ID,
                 "client_secret" : self.CLIENT_SECRET
                 }
-        #resp = self.postRequest("authentication", "https://api.netatmo.com/oauth2/token", payload)
         resp = self.post_and_get_json("https://api.netatmo.com/oauth2/token", "authentication", params=payload)
         print(resp)
         if self.refreshToken != resp['refresh_token']:
