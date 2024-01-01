@@ -6,8 +6,6 @@ import logging
 
 _LOGGER = logging.getLogger(__name__)
 
-import requests, urllib
-
 class myStation:
     def __init__(self):
         self._pressure = None
@@ -140,7 +138,7 @@ class apiNetatmo:
             response = urllib.request.urlopen(req, params, timeout=timeout)
         except urllib.error.HTTPError as err:
             if err.code == 403:
-                logger.warning("Your current token scope do not allow access to %s" % topic)
+                _LOGGER.warning("Your current token scope do not allow access")
             else:
                 print("code=%s, reason=%s, body=%s" % (err.code, err.reason, err.fp.read()))
             return None
