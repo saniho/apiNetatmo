@@ -24,10 +24,9 @@
   <component name="ChangeListManager">
     <list default="true" id="ac7c616a-d2d4-4819-be66-a5b1c15eac78" name="Default Changelist" comment="migration to new authentification requered by NetAtmo">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/custom_components/apiNetatmo/apiNetatmo.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_components/apiNetatmo/apiNetatmo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/custom_components/apiNetatmo/const.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_components/apiNetatmo/const.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/custom_components/apiNetatmo/sensor.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_components/apiNetatmo/sensor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testSensor.py" beforeDir="false" afterPath="$PROJECT_DIR$/testSensor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/custom_components/apiNetatmo/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/custom_components/apiNetatmo/manifest.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +43,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="dev" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -68,7 +67,7 @@
     "Python.testSensor.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "dev",
+    "git-widget-placeholder": "newApiNetatmmo",
     "last_opened_file_path": "C:/Projets/apiNetatmo",
     "settings.editor.selected.configurable": "preferences.lookFeel"
   }
@@ -224,7 +223,15 @@
       <option name="project" value="LOCAL" />
       <updated>1690312552763</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="migration to new authentification requered by NetAtmo">
+      <option name="closed" value="true" />
+      <created>1704032339691</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1704032339691</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -253,21 +260,6 @@
           <url>file://$PROJECT_DIR$/custom_components/apiNetatmo/sensor.py</url>
           <line>1</line>
           <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/custom_components/apiNetatmo/apiNetatmo.py</url>
-          <line>202</line>
-          <option name="timeStamp" value="18" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/custom_components/apiNetatmo/apiNetatmo.py</url>
-          <line>167</line>
-          <option name="timeStamp" value="20" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/custom_components/apiNetatmo/apiNetatmo.py</url>
-          <line>111</line>
-          <option name="timeStamp" value="21" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
