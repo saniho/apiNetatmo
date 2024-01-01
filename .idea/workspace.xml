@@ -24,8 +24,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ac7c616a-d2d4-4819-be66-a5b1c15eac78" name="Default Changelist" comment="migration to new authentification requered by NetAtmo">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/custom_components/apiNetatmo/const.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_components/apiNetatmo/const.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/custom_components/apiNetatmo/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/custom_components/apiNetatmo/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/custom_components/apiNetatmo/apiNetatmo.py" beforeDir="false" afterPath="$PROJECT_DIR$/custom_components/apiNetatmo/apiNetatmo.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +41,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="dev" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -50,6 +49,9 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4
+}]]></component>
   <component name="ProjectId" id="1kwBSRk6teb48cdkFm4ObO6a2Jj" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -58,14 +60,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Projets/apiNetatmo&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.testSensor.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "newApiNetatmmo",
+    "last_opened_file_path": "C:/Projets/apiNetatmo",
+    "settings.editor.selected.configurable": "preferences.lookFeel"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Projets\apiNetatmo" />
@@ -74,6 +78,7 @@
   <component name="RunManager">
     <configuration name="testSensor" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="apiNetatmo" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -99,6 +104,13 @@
         <item itemvalue="Python.testSensor" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-50da183f06c8-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.13135.95" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -201,7 +213,39 @@
       <option name="project" value="LOCAL" />
       <updated>1690224528904</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="migration to new authentification requered by NetAtmo">
+      <option name="closed" value="true" />
+      <created>1690312552763</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1690312552763</updated>
+    </task>
+    <task id="LOCAL-00015" summary="migration to new authentification requered by NetAtmo">
+      <option name="closed" value="true" />
+      <created>1704032339691</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1704032339691</updated>
+    </task>
+    <task id="LOCAL-00016" summary="migration to new authentification requered by NetAtmo">
+      <option name="closed" value="true" />
+      <created>1704138884735</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1704138884735</updated>
+    </task>
+    <task id="LOCAL-00017" summary="migration to new authentification requered by NetAtmo">
+      <option name="closed" value="true" />
+      <created>1704139022165</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1704139022165</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -230,11 +274,6 @@
           <url>file://$PROJECT_DIR$/custom_components/apiNetatmo/sensor.py</url>
           <line>1</line>
           <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/custom_components/apiNetatmo/apiNetatmo.py</url>
-          <line>158</line>
-          <option name="timeStamp" value="18" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

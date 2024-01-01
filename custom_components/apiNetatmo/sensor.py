@@ -18,7 +18,7 @@ from homeassistant.const import (
     CONF_SCAN_INTERVAL,
 )
 
-from .const import ( __VERSION__ , CONF_REFRESH_TOKEN)
+from .const import ( __VERSION__ , CONF_REFRESH_TOKEN, CONF_ACCESS_TOKEN)
 
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
@@ -34,6 +34,7 @@ SCAN_INTERVAL = timedelta(seconds=1800)
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_REFRESH_TOKEN): cv.string,
+        vol.Required(CONF_ACCESS_TOKEN): cv.string,
         vol.Required(CONF_TOKEN): cv.string,
         vol.Required(CONF_CODE): cv.string,
         vol.Required(CONF_HOST): cv.string,
@@ -44,12 +45,12 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 from . import apiNetatmo
 
 class myNetatmo:
-    def __init__(self, clientID, clientSecret, refreshToken, host, _update_interval):
+    def __init__(self, clientID, clientSecret, refreshToken, accessToken, host, _update_interval):
         self._lastSynchro = None
         self._lstStation = None
         self._update_interval = _update_interval
-        self.clientID, self.clientSecret, self.refreshToken, self.host = \
-            clientID, clientSecret, refreshToken, host
+        self.clientID, self.clientSecret, self.refreshToken, self.accessToken, self.host = \
+            clientID, clientSecret, refreshToken, accessToken, host
         pass
 
 
@@ -62,7 +63,7 @@ class myNetatmo:
             ( (self._lastSynchro + self._update_interval) < courant ):
 
             self._myNetatmo = apiNetatmo.apiNetatmo( \
-                self.clientID, self.clientSecret, self.refreshToken, self.host )
+                self.clientID, self.clientSecret, self.refreshToken, self.accessToken, self.host )
             token = self._myNetatmo.authenticate()
             if ( self._lstStation == None ):
                 self._lstStation = self._myNetatmo.get_favorites_stations()
@@ -81,6 +82,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     update_interval = config.get(CONF_SCAN_INTERVAL, SCAN_INTERVAL)
 
     refreshToken = config.get(CONF_REFRESH_TOKEN)
+    accessToken = config.get(CONF_ACCESS_TOKEN)
     clientID = config.get(CONF_CODE)
     clientSecret = config.get(CONF_TOKEN)
     host = config.get(CONF_HOST)
@@ -91,7 +93,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         _LOGGER.exception("Could not run my First Extension")
         return False
 
-    myNet = myNetatmo( clientID, clientSecret, refreshToken, host, update_interval )
+    myNet = myNetatmo( clientID, clientSecret, refreshToken, accessToken, host, update_interval )
     myNet.update()
     lstStations = myNet.getLstStation()
     for myStationKeys in lstStations.keys():

@@ -1,9 +1,10 @@
 
+from sys import version_info
+
+PYTHON3 = (version_info.major > 2)
 import logging
 
 _LOGGER = logging.getLogger(__name__)
-
-import requests
 
 class myStation:
     def __init__(self):
@@ -95,13 +96,13 @@ class myStation:
         return self._lastSynchro
 
 class apiNetatmo:
-    def __init__(self, clientID, clientSecret, refreshToken, deviceId):
+    def __init__(self, clientID, clientSecret, refreshToken, accessToken, deviceId):
         self.CLIENT_ID = clientID
         self.CLIENT_SECRET = clientSecret
         self.refreshToken = refreshToken
         self.deviceId = deviceId
         self.expiration = 0 # Force refresh token
-        self._accessToken = None
+        self._accessToken = accessToken
         pass
 
     def renew_token(self):
@@ -112,7 +113,8 @@ class apiNetatmo:
                 "client_id" : self.CLIENT_ID,
                 "client_secret" : self.CLIENT_SECRET
                 }
-        resp = self.post_and_get_json("https://api.netatmo.com/oauth2/token", "access_token", params=payload)
+        resp = self.post_and_get_json("https://api.netatmo.com/oauth2/token", "authentication", params=payload)
+        print(resp)
         if self.refreshToken != resp['refresh_token']:
             print("New refresh token:", resp['refresh_token'])
         self._accessToken = resp['access_token']
@@ -136,7 +138,7 @@ class apiNetatmo:
             response = urllib.request.urlopen(req, params, timeout=timeout)
         except urllib.error.HTTPError as err:
             if err.code == 403:
-                logger.warning("Your current token scope do not allow access to %s" % topic)
+                _LOGGER.warning("Your current token scope do not allow access")
             else:
                 print("code=%s, reason=%s, body=%s" % (err.code, err.reason, err.fp.read()))
             return None

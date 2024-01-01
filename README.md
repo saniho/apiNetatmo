@@ -8,6 +8,7 @@ il suffit d'ajouter le sensor suivant dans votre configuration home assistant
 ```yaml
 - platform: apiNetatmo
   refreh_token : <votreRefreshToken>
+  access_token: <votreAccessToken>
   code: <votrecode>
   token: <votretoken>
   host: <une des adresse mac d'un de vos favori>

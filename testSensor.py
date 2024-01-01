@@ -5,9 +5,16 @@ mon_conteneur.read("../myCredential/security.txt")
 CLIENT_ID = mon_conteneur['NETATMO']['CLIENT_ID']
 CLIENT_SECRET = mon_conteneur['NETATMO']['CLIENT_SECRET']
 REFRESH_TOKEN = mon_conteneur['NETATMO']['REFRESH_TOKEN']
+ACCESS_TOKEN = mon_conteneur['NETATMO']['ACCESS_TOKEN']
 from custom_components.apiNetatmo import apiNetatmo
 
-myNetatmo = apiNetatmo.apiNetatmo( CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, deviceId="06:00:00:02:5e:ce")
+from custom_components.apiNetatmo import  lnetatmo
+
+myNetatmo = apiNetatmo.apiNetatmo( CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, ACCESS_TOKEN, deviceId="06:00:00:02:5e:ce")
+#authorization = lnetatmo.ClientAuth( CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN, ACCESS_TOKEN )
+
+#devList = lnetatmo.WeatherStationData(authorization)
+#print( devList )
 myNetatmo.authenticate()
 data = myNetatmo.get_favorites_stations()
 for clef in data.keys():
